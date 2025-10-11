@@ -24,9 +24,12 @@ The system supports:
 ### 1. Object-Oriented Design
 - `Student` class: stores individual student info privately  
 - `StudentDB` class: manages the collection of students using a **custom vector**  
-- Operator overloading implemented for:  
-  - `+` to add students  
-  - `=` or custom functions to modify records  
+- **Operator overloading implemented** for:  
+  - `+` → add a student to `StudentDB`  
+  - `-` → remove a student by roll number  
+  - `[]` → access/modify student by roll number  
+  - `<` (optional in `Student`) → compare students by name or marks for sorting  
+- All data members are **private** and only necessary getters/setters or operators are public  
 
 ### 2. Exception Handling
 Custom exception classes handle:
@@ -41,19 +44,33 @@ All exceptions are thrown at appropriate points during CSV parsing or manual inp
 ### 3. Total Marks Calculation
 - Each student has marks per course component  
 - Function `computeTotal()` computes total marks for each student  
+- Automatically updates when marks are modified  
 
 ### 4. Sorting
 - **Name**: Trie-based sorting  
 - **Roll number**: Simple pointer-based sorting  
 - **Marks**: Sort by a specific course component  
+- Sorting uses operator overloads (`<`) where applicable  
 
 ### 5. Syscall-Only Implementation
 - No `<iostream>`, `<vector>`, `<string>`, or `<stddef.h>`  
 - Custom headers used:  
-  - `syscalls.h` → low-level Linux syscalls  
+  - `syscalls.h` → low-level Linux syscalls (3 & 6 arg wrappers)  
   - `vector_sys.h` → dynamic array (vector) using `mmap`/`munmap`  
   - `stddef_sys.h` → replacement for `size_t`, `NULL`, `offsetof`  
+  - `file_sys.h`, `io_sys.h`, `str_sys.h`, `except_sys.h` → helper functions  
 - CSV reading/writing implemented using `SYS_READ` / `SYS_WRITE` syscalls  
+
+---
+
+## Operator Overloading Summary
+
+| Operator | Class | Functionality |
+|----------|-------|---------------|
+| `+` | `StudentDB` | Add a `Student` to database and save CSV |
+| `-` | `StudentDB` | Remove a `Student` by roll number and update CSV |
+| `[]` | `StudentDB` | Access or modify a `Student` by roll number |
+| `<` | `Student` (optional) | Compare students by name or marks (used in sorting) |
 
 ---
 
@@ -62,13 +79,14 @@ All exceptions are thrown at appropriate points during CSV parsing or manual inp
 | File | Description |
 |------|-------------|
 | `main_sys.cpp` | Main program with CLI menu |
-| `student_sys.h` | `Student` class (private members, total marks) |
-| `studentdb_sys.h` | `StudentDB` class for managing students, add/modify/search |
+| `student_sys.h` | `Student` class (private members, total marks, operator overloads) |
+| `studentdb_sys.h` | `StudentDB` class for managing students, add/modify/search, operator overloads |
 | `vector_sys.h` | Custom dynamic vector using syscalls |
 | `syscalls.h` | Low-level syscall wrapper (3 & 6 arguments) |
 | `stddef_sys.h` | Replacement for `stddef.h` (size_t, NULL, offsetof) |
 | `sorting.h` | Trie-based name sorting and other sort helpers |
 | `students.csv` | Persistent storage of student data |
+| `file_sys.h`, `io_sys.h`, `str_sys.h`, `except_sys.h` | Helper modules for file, string, I/O, and exceptions |
 
 ---
 
