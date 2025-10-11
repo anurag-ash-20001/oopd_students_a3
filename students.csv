@@ -1,4 +1,5 @@
 M201,Alice Smith,ECE,MTech,9,12,28,46,95
-P301,Robert Brown,CSE,PhD,10,10,30,48,98
+M109,Alice w,ECE,Mtech,10,10,20,30,70
 B101,John Doe,CSE,BTech,8,10,25,44,87
-b111,aa aa,ece,btech,1,1,1,1,4
+P301,Robert Brown,CSE,PhD,10,10,30,48,98
+M101,Alice A,CSE,PhD,8,8,18,28,62

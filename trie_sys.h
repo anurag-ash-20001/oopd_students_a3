@@ -22,13 +22,13 @@ static void trie_free(TrieNode* node) {
 
 // Build trie and traverse
 static void trie_sort_students(StudentDB* db) {
-    TrieNode root;
+    TrieNode root = {}; // initialize root
     // insert each student
-    for (long i=0;i<db->size();++i) {
+    for (long i = 0; i < db->size(); ++i) {
         Student* s = db->at(i);
         TrieNode* cur = &root;
         const char* name = s->getName();
-        for (long k=0; name[k]; ++k) {
+        for (long k = 0; name[k]; ++k) {
             unsigned char ch = (unsigned char)name[k];
             if (!cur->children[ch]) cur->children[ch] = new TrieNode();
             cur = cur->children[ch];
@@ -36,32 +36,36 @@ static void trie_sort_students(StudentDB* db) {
         cur->isEnd = true;
         vector_push(&cur->holders, s);
     }
-    // collect in-order
-    // build a temp vector to hold sorted pointers
-    SysVector temp; vector_init(&temp, db->size() > 4 ? db->size() : 4);
-    // recursion stack
-    // recursive lambda not available; implement function
+
+    // collect in-order into temp vector
+    SysVector temp;
+    vector_init(&temp, db->size() > 4 ? db->size() : 4);
+
+    // recursive traversal function
     struct Recursor {
         static void go(TrieNode* node, SysVector* acc) {
             if (!node) return;
             if (node->isEnd) {
-                for (long i=0;i<node->holders.size;++i) vector_push(acc, node->holders.data[i]);
+                for (long i = 0; i < node->holders.size; ++i)
+                    vector_push(acc, node->holders.data[i]);
             }
-            for (int i=0;i<128;++i) if (node->children[i]) go(node->children[i], acc);
+            for (int i = 0; i < 128; ++i) // ascending ASCII
+                if (node->children[i]) go(node->children[i], acc);
         }
     };
     Recursor::go(&root, &temp);
-    // now copy sorted back into db->vec
-    long idx=0;
-    for (long i=0;i<temp.size;++i) {
-        db->swap_indices(idx++, (long) (idx-1)); // swap meaningless; instead assign sequentially
+
+    // overwrite db->vec.data with temp.data
+    SysVector* vec = db->getRawVector();
+    for (long i = 0; i < temp.size && i < vec->size; ++i) {
+        vec->data[i] = temp.data[i];
     }
-    // easier: overwrite db vec.data with temp.data
-    for (long i=0;i<db->size() && i<temp.size;++i) db->getRawVector()->data[i] = temp.data[i];
-    // cleanup: free temp vector
+
+    // cleanup
     vector_free(&temp);
-    // free allocated trie nodes (skip root)
-    for (int i=0;i<128;++i) if (root.children[i]) trie_free(root.children[i]);
+    for (int i = 0; i < 128; ++i)
+        if (root.children[i]) trie_free(root.children[i]);
 }
+
 
 #endif // TRIE_SYS_H
