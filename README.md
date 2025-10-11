@@ -6,7 +6,7 @@
 
 ## Overview
 
-This project implements a **student management system** for the **OOPD course (Monsoon 2025)** using **pure system calls only**, without relying on any C++ standard libraries.  
+This assigment implements a **student management system**  using **pure system calls only**, without relying on any C++ standard libraries.  
 The system supports:
 
 - Tracking students of **all levels** (BTech, MTech, PhD)  
