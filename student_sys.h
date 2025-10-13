@@ -92,24 +92,36 @@ public:
 
     // input validation (simple)
     static void validateInput(const char* r, const char* n) {
-        // buffer overflow on roll or name
-        long lenr = 0; while (r[lenr]) ++lenr; if (lenr >= MAX_ROLL) sys_error_exit("Roll buffer overflow");
-        long lenn = 0; while (n[lenn]) ++lenn; if (lenn >= MAX_NAME) sys_error_exit("Name buffer overflow");
-        // must have space in name
+        long lenr = 0; while (r[lenr]) ++lenr;
+        if (lenr >= MAX_ROLL) throw BufferOverflowException("Roll buffer overflow");
+
+        long lenn = 0; while (n[lenn]) ++lenn;
+        if (lenn >= MAX_NAME) throw BufferOverflowException("Name buffer overflow");
+
         bool hasSpace = false;
-        for (long i=0; i<lenn; ++i) if (n[i] == ' ') { hasSpace = true; break; }
-        if (!hasSpace) sys_error_exit("No second name");
-        // check chars in name (only alpha and space)
-        for (long i=0;i<lenn;++i) {
+        for (long i=0; i<lenn; ++i)
+            if (n[i] == ' ') { hasSpace = true; break; }
+        if (!hasSpace) throw MissingSecondNameException();
+
+        for (long i=0; i<lenn; ++i) {
             char c = n[i];
             if (c==' ') continue;
-            if (!((c>='A' && c<='Z') || (c>='a' && c<='z'))) sys_error_exit("Invalid character in name");
+            if (!((c>='A' && c<='Z') || (c>='a' && c<='z')))
+                throw InvalidCharInNameException();
         }
-        // roll must be alnum
+
         for (long i=0; r[i]; ++i) {
             char c = r[i];
-            if (!((c>='0' && c<='9') || (c>='A' && c<='Z') || (c>='a' && c<='z'))) sys_error_exit("Invalid character in roll");
+            if (!((c>='0' && c<='9') || (c>='A' && c<='Z') || (c>='a' && c<='z')))
+                throw InvalidCharInRollException();
         }
+    }
+
+    static void validateMarks(double q, double a, double m, double e) {
+        if (q > 100.0 || a > 100.0 || m > 100.0 || e > 100.0)
+            throw MarksOverflowException();
+        if (q < 0.0 || a < 0.0 || m < 0.0 || e < 0.0)
+            throw NegativeMarksException();
     }
 };
 
